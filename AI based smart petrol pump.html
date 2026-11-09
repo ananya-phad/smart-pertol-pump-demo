@@ -1,0 +1,2571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Smart Petrol Pump Management System</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    background:#eef6fb;
+    color:#17324d;
+}
+
+/* ================= LOGIN ================= */
+
+#loginScreen{
+    position:fixed;
+    inset:0;
+    background:linear-gradient(135deg,#062d55,#087fc1);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+    padding:20px;
+}
+
+.loginBox{
+    width:390px;
+    max-width:100%;
+    background:white;
+    border-radius:20px;
+    padding:30px;
+    box-shadow:0 20px 60px rgba(0,0,0,.3);
+    text-align:center;
+}
+
+.loginLogo{
+    width:75px;
+    height:75px;
+    border-radius:50%;
+    background:#e7f5ff;
+    color:#087fc1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:40px;
+    margin:0 auto 15px;
+}
+
+.loginBox h1{
+    color:#064b85;
+    font-size:23px;
+    margin-bottom:5px;
+}
+
+.loginBox p{
+    color:#718396;
+    font-size:13px;
+    margin-bottom:25px;
+}
+
+.loginBox input{
+    width:100%;
+    padding:13px;
+    margin-bottom:13px;
+    border:1px solid #ccdce6;
+    border-radius:9px;
+    outline:none;
+}
+
+.loginBox input:focus{
+    border-color:#087fc1;
+}
+
+.loginBtn{
+    width:100%;
+    border:none;
+    padding:13px;
+    border-radius:9px;
+    background:#087fc1;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.loginBtn:hover{
+    background:#065e91;
+}
+
+.loginError{
+    color:#d00000;
+    font-size:13px;
+    margin-top:12px;
+    display:none;
+}
+
+.demoLogin{
+    margin-top:15px;
+    background:#f0f8fc;
+    padding:10px;
+    border-radius:8px;
+    font-size:12px;
+    color:#527087;
+}
+
+/* ================= HEADER ================= */
+
+header{
+    height:78px;
+    background:linear-gradient(135deg,#063b73,#087fc1);
+    color:white;
+    padding:12px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position:sticky;
+    top:0;
+    z-index:1000;
+    box-shadow:0 4px 15px rgba(0,0,0,.2);
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logoIcon{
+    width:48px;
+    height:48px;
+    background:white;
+    color:#087fc1;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+}
+
+.logo h1{
+    font-size:19px;
+}
+
+.logo p{
+    font-size:11px;
+    opacity:.85;
+}
+
+.menuBtn{
+    border:none;
+    background:white;
+    color:#087fc1;
+    font-size:25px;
+    width:48px;
+    height:43px;
+    border-radius:8px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.menuBtn:hover{
+    background:#e8f5fc;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+    position:fixed;
+    top:78px;
+    left:0;
+    bottom:0;
+    width:245px;
+    background:#062d55;
+    padding:18px 12px;
+    z-index:900;
+    overflow-y:auto;
+    transition:.25s;
+}
+
+.sidebar.closed{
+    transform:translateX(-100%);
+}
+
+.sidebar button{
+    width:100%;
+    padding:13px;
+    margin-bottom:8px;
+    border:none;
+    background:transparent;
+    color:white;
+    text-align:left;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:14px;
+    transition:.2s;
+}
+
+.sidebar button:hover,
+.sidebar button.active{
+    background:#087fc1;
+}
+
+.sidebar .danger{
+    background:#a90000;
+}
+
+.sidebar .danger:hover{
+    background:#d00000;
+}
+
+.userBox{
+    background:rgba(255,255,255,.1);
+    color:white;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:15px;
+    font-size:12px;
+}
+
+.userBox strong{
+    display:block;
+    font-size:14px;
+    margin-bottom:3px;
+}
+
+/* ================= MAIN ================= */
+
+.main{
+    margin-left:245px;
+    padding:25px;
+    transition:.25s;
+}
+
+.main.full{
+    margin-left:0;
+}
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+.pageTitle{
+    margin-bottom:20px;
+}
+
+.pageTitle h2{
+    color:#064b85;
+    margin-bottom:5px;
+}
+
+.pageTitle p{
+    color:#64798c;
+}
+
+/* ================= CARDS ================= */
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+
+.card{
+    background:white;
+    border-radius:14px;
+    padding:18px;
+    box-shadow:0 3px 15px rgba(0,0,0,.08);
+    border:1px solid #dcecf6;
+}
+
+.stat{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.statIcon{
+    width:50px;
+    height:50px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+}
+
+.blue{background:#e0f2ff;color:#087fc1;}
+.green{background:#e5faeb;color:#159447;}
+.red{background:#ffe6e6;color:#d90000;}
+.orange{background:#fff1dc;color:#ef8500;}
+.purple{background:#eee8ff;color:#7040c5;}
+
+.stat h3{
+    font-size:27px;
+}
+
+.stat p{
+    color:#75889a;
+    font-size:13px;
+}
+
+/* ================= DASHBOARD ================= */
+
+.dashboardGrid{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:18px;
+    margin-top:18px;
+}
+
+.sectionTitle{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:15px;
+    gap:10px;
+}
+
+.sectionTitle h3{
+    color:#07518b;
+}
+
+.status{
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.online{
+    background:#dff8e7;
+    color:#11883d;
+}
+
+.warning{
+    background:#fff0d4;
+    color:#b96b00;
+}
+
+.alertStatus{
+    background:#ffe1e1;
+    color:#c00000;
+}
+
+/* ================= CAMERA ================= */
+
+.cameraBox{
+    height:300px;
+    background:#081b2c;
+    border-radius:12px;
+    position:relative;
+    overflow:hidden;
+}
+
+.cameraScreen{
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+      linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px),
+      #102b40;
+    background-size:25px 25px;
+}
+
+.cameraScreen video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:none;
+}
+
+.cameraOverlay{
+    position:absolute;
+    top:12px;
+    left:12px;
+    right:12px;
+    display:flex;
+    justify-content:space-between;
+    color:white;
+    font-size:12px;
+}
+
+.rec{
+    background:#e00000;
+    padding:5px 9px;
+    border-radius:5px;
+}
+
+.cameraCenter{
+    color:white;
+    text-align:center;
+}
+
+.cameraCenter div{
+    font-size:50px;
+}
+
+.cameraBottom{
+    position:absolute;
+    bottom:10px;
+    left:10px;
+    right:10px;
+    color:white;
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+}
+
+/* ================= BUTTONS ================= */
+
+.btn{
+    border:none;
+    border-radius:8px;
+    padding:10px 15px;
+    cursor:pointer;
+    color:white;
+    background:#087fc1;
+    font-weight:bold;
+    margin:3px;
+}
+
+.btn:hover{
+    opacity:.85;
+}
+
+.btn.red{
+    background:#d90000;
+}
+
+.btn.green{
+    background:#159447;
+}
+
+.btn.orange{
+    background:#ed8700;
+}
+
+.btn.dark{
+    background:#17324d;
+}
+
+.btn.light{
+    background:#e8f5fc;
+    color:#07518b;
+}
+
+/* ================= DETECTION ================= */
+
+.detectionGrid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+}
+
+.detect{
+    background:#fff;
+    padding:15px;
+    border-radius:12px;
+    border:1px solid #dbeaf3;
+    text-align:center;
+}
+
+.detectIcon{
+    font-size:30px;
+    margin-bottom:8px;
+}
+
+.detect h4{
+    margin-bottom:5px;
+}
+
+.detect p{
+    font-size:12px;
+    color:#708396;
+}
+
+.detect.safe{
+    border-left:5px solid #16a04a;
+}
+
+.detect.risk{
+    border-left:5px solid #e00000;
+    animation:pulse 1.3s infinite;
+}
+
+@keyframes pulse{
+    50%{
+        box-shadow:0 0 12px rgba(220,0,0,.3);
+    }
+}
+
+/* ================= ALERTS ================= */
+
+.alertItem{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:13px;
+    border-bottom:1px solid #edf2f5;
+}
+
+.alertItem:last-child{
+    border-bottom:none;
+}
+
+.alertCircle{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#ffe2e2;
+    color:#d00000;
+}
+
+.alertText{
+    flex:1;
+}
+
+.alertText strong{
+    display:block;
+}
+
+.alertText small{
+    color:#76899a;
+}
+
+/* ================= TABLE ================= */
+
+.tableWrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+}
+
+th,td{
+    padding:12px;
+    border-bottom:1px solid #e5edf2;
+    text-align:left;
+    font-size:13px;
+}
+
+th{
+    background:#07518b;
+    color:white;
+}
+
+.badge{
+    padding:5px 9px;
+    border-radius:15px;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.badge.high{
+    background:#ffdede;
+    color:#c40000;
+}
+
+.badge.medium{
+    background:#fff0d2;
+    color:#ad6900;
+}
+
+.badge.low{
+    background:#ddf7e6;
+    color:#14833b;
+}
+
+/* ================= FLOW ================= */
+
+.flow{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.flowBox{
+    width:150px;
+    text-align:center;
+    padding:18px 10px;
+    border-radius:12px;
+    background:#eaf7ff;
+    border:2px solid #b9e4f8;
+}
+
+.flowBox .big{
+    font-size:30px;
+}
+
+.arrow{
+    font-size:25px;
+    color:#087fc1;
+}
+
+/* ================= TEST ================= */
+
+.testGrid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+}
+
+.testBtn{
+    padding:15px;
+    border:2px solid #dceaf3;
+    border-radius:12px;
+    background:white;
+    cursor:pointer;
+    text-align:left;
+}
+
+.testBtn:hover{
+    border-color:#087fc1;
+    background:#f1faff;
+}
+
+.testBtn strong{
+    display:block;
+    margin-bottom:5px;
+}
+
+.testBtn small{
+    color:#728596;
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.65);
+    z-index:3000;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modalBox{
+    width:min(500px,100%);
+    background:white;
+    border-radius:16px;
+    padding:25px;
+    text-align:center;
+    animation:pop .2s ease;
+}
+
+@keyframes pop{
+    from{
+        transform:scale(.8);
+        opacity:0
+    }
+    to{
+        transform:scale(1);
+        opacity:1
+    }
+}
+
+.modalIcon{
+    font-size:55px;
+}
+
+.modalBox h2{
+    margin:10px 0;
+    color:#c40000;
+}
+
+.modalBox p{
+    color:#65798b;
+    margin-bottom:20px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1100px){
+
+    .grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .dashboardGrid{
+        grid-template-columns:1fr;
+    }
+
+    .detectionGrid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .testGrid{
+        grid-template-columns:1fr 1fr;
+    }
+}
+
+@media(max-width:700px){
+
+    header{
+        height:68px;
+        padding:10px 12px;
+    }
+
+    .sidebar{
+        top:68px;
+        transform:translateX(-100%);
+        box-shadow:5px 0 20px rgba(0,0,0,.25);
+    }
+
+    .sidebar.open{
+        transform:translateX(0);
+    }
+
+    .main{
+        margin-left:0;
+        padding:15px;
+    }
+
+    .logo h1{
+        font-size:14px;
+    }
+
+    .logo p{
+        font-size:9px;
+    }
+
+    .logoIcon{
+        width:40px;
+        height:40px;
+        font-size:20px;
+    }
+
+    .grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .detectionGrid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .testGrid{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:450px){
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .detectionGrid{
+        grid-template-columns:1fr;
+    }
+
+    .flowBox{
+        width:120px;
+    }
+
+    .sectionTitle{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+LOGIN SCREEN
+===================================================== -->
+
+<div id="loginScreen">
+
+    <div class="loginBox">
+
+        <div class="loginLogo">⛽</div>
+
+        <h1>AI SMART PETROL PUMP</h1>
+
+        <p>Management & Safety Monitoring System</p>
+
+        <input
+            type="text"
+            id="username"
+            placeholder="Username"
+            autocomplete="username"
+        >
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Password"
+            autocomplete="current-password"
+        >
+
+        <button class="loginBtn" onclick="login()">
+            🔐 Login
+        </button>
+
+        <div class="loginError" id="loginError">
+            ❌ Incorrect username or password
+        </div>
+
+        <div class="demoLogin">
+            Demo Login<br>
+            <b>Username:</b> admin &nbsp;
+            <b>Password:</b> 1234
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+MAIN WEBSITE
+===================================================== -->
+
+<div id="app" style="display:none;">
+
+<!-- HEADER -->
+
+<header>
+
+    <div class="logo">
+
+        <div class="logoIcon">⛽</div>
+
+        <div>
+            <h1>AI SMART PETROL PUMP</h1>
+            <p>Management & Safety Monitoring System</p>
+        </div>
+
+    </div>
+
+    <!-- WORKING 3 DASH MENU -->
+    <button
+        class="menuBtn"
+        onclick="toggleMenu()"
+        aria-label="Open menu"
+    >
+        ☰
+    </button>
+
+</header>
+
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="userBox">
+        👤
+        <strong id="loggedUser">Admin</strong>
+        System Administrator
+    </div>
+
+    <button class="active"
+        onclick="showPage('dashboard',this)">
+        🏠 Dashboard
+    </button>
+
+    <button onclick="showPage('monitoring',this)">
+        📹 Live Monitoring
+    </button>
+
+    <button onclick="showPage('detection',this)">
+        🛡️ Safety Detection
+    </button>
+
+    <button onclick="showPage('alerts',this)">
+        🔔 Alerts
+    </button>
+
+    <button onclick="showPage('incidents',this)">
+        📋 Incident Records
+    </button>
+
+    <button onclick="showPage('workflow',this)">
+        ⚙️ System Workflow
+    </button>
+
+    <button onclick="showPage('testing',this)">
+        🧪 Testing / Demo
+    </button>
+
+    <button onclick="showPage('about',this)">
+        ℹ️ About Project
+    </button>
+
+    <button class="danger" onclick="emergencyAlert()">
+        🚨 EMERGENCY ALERT
+    </button>
+
+    <button
+        style="background:#263f59;margin-top:10px"
+        onclick="logout()"
+    >
+        🚪 Logout
+    </button>
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="main" id="mainContent">
+
+
+<!-- =====================================================
+DASHBOARD
+===================================================== -->
+
+<section class="page active" id="dashboard">
+
+    <div class="pageTitle">
+
+        <h2>Smart Safety Dashboard</h2>
+
+        <p>
+            AI-based monitoring of petrol pump safety conditions
+        </p>
+
+    </div>
+
+
+    <div class="grid">
+
+        <div class="card stat">
+
+            <div>
+                <p>CCTV Cameras</p>
+                <h3>04</h3>
+            </div>
+
+            <div class="statIcon blue">📹</div>
+
+        </div>
+
+
+        <div class="card stat">
+
+            <div>
+                <p>Active Alerts</p>
+                <h3 id="alertCount">02</h3>
+            </div>
+
+            <div class="statIcon red">🚨</div>
+
+        </div>
+
+
+        <div class="card stat">
+
+            <div>
+                <p>Safety Status</p>
+                <h3 id="safetyStatus">SAFE</h3>
+            </div>
+
+            <div class="statIcon green">✓</div>
+
+        </div>
+
+
+        <div class="card stat">
+
+            <div>
+                <p>Incidents Today</p>
+                <h3 id="incidentCount">05</h3>
+            </div>
+
+            <div class="statIcon orange">📋</div>
+
+        </div>
+
+    </div>
+
+
+    <div class="dashboardGrid">
+
+        <!-- CAMERA -->
+
+        <div class="card">
+
+            <div class="sectionTitle">
+
+                <h3>📹 Live Pump Monitoring</h3>
+
+                <span class="status online">
+                    ● SYSTEM ONLINE
+                </span>
+
+            </div>
+
+
+            <div class="cameraBox">
+
+                <div class="cameraScreen">
+
+                    <video
+                        id="cameraVideo"
+                        autoplay
+                        playsinline
+                    ></video>
+
+                    <div
+                        class="cameraCenter"
+                        id="cameraPlaceholder"
+                    >
+                        <div>📹</div>
+
+                        <strong>
+                            CCTV CAMERA 01
+                        </strong>
+
+                        <p>
+                            Pump Area • Live Monitoring
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="cameraOverlay">
+
+                    <span>
+                        CAM-01 | PUMP AREA
+                    </span>
+
+                    <span class="rec">
+                        ● LIVE
+                    </span>
+
+                </div>
+
+
+                <div class="cameraBottom">
+
+                    <span id="cameraTime">
+                        --:--:--
+                    </span>
+
+                    <span>
+                        AI ANALYSIS: ACTIVE
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <br>
+
+            <button
+                class="btn"
+                onclick="startCamera()"
+            >
+                📷 Start Phone Camera
+            </button>
+
+            <button
+                class="btn light"
+                onclick="stopCamera()"
+            >
+                Stop Camera
+            </button>
+
+        </div>
+
+
+        <!-- ALERT PANEL -->
+
+        <div class="card">
+
+            <div class="sectionTitle">
+
+                <h3>🔔 Recent Alerts</h3>
+
+                <span class="status alertStatus">
+                    2 ACTIVE
+                </span>
+
+            </div>
+
+
+            <div id="recentAlerts">
+
+                <div class="alertItem">
+
+                    <div class="alertCircle">🔥</div>
+
+                    <div class="alertText">
+                        <strong>Fire / Flame Risk</strong>
+                        <small>Pump Area • 10:35 AM</small>
+                    </div>
+
+                    <span class="badge high">
+                        HIGH
+                    </span>
+
+                </div>
+
+
+                <div class="alertItem">
+
+                    <div class="alertCircle">🚬</div>
+
+                    <div class="alertText">
+                        <strong>Smoking Detected</strong>
+                        <small>Pump 02 • 10:30 AM</small>
+                    </div>
+
+                    <span class="badge high">
+                        HIGH
+                    </span>
+
+                </div>
+
+
+                <div class="alertItem">
+
+                    <div class="alertCircle">📱</div>
+
+                    <div class="alertText">
+                        <strong>Phone Usage</strong>
+                        <small>Pump Area • 10:20 AM</small>
+                    </div>
+
+                    <span class="badge medium">
+                        MEDIUM
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <br>
+
+
+    <!-- SAFETY DETECTION -->
+
+    <div class="card">
+
+        <div class="sectionTitle">
+
+            <h3>🛡️ Safety Detection</h3>
+
+            <button
+                class="btn"
+                onclick="runSafetyScan()"
+            >
+                🔍 Run AI Scan
+            </button>
+
+        </div>
+
+
+        <div
+            class="detectionGrid"
+            id="dashboardDetection"
+        >
+
+            <div class="detect safe">
+                <div class="detectIcon">🔥</div>
+                <h4>Fire / Flame</h4>
+                <p id="fireStatus">
+                    No Risk Detected
+                </p>
+            </div>
+
+
+            <div class="detect safe">
+                <div class="detectIcon">☁️</div>
+                <h4>Smoke</h4>
+                <p id="smokeStatus">
+                    No Risk Detected
+                </p>
+            </div>
+
+
+            <div class="detect safe">
+                <div class="detectIcon">💧</div>
+                <h4>Fuel Spillage</h4>
+                <p id="spillStatus">
+                    No Risk Detected
+                </p>
+            </div>
+
+
+            <div class="detect safe">
+                <div class="detectIcon">🚬</div>
+                <h4>Smoking</h4>
+                <p id="smokePersonStatus">
+                    No Risk Detected
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+LIVE MONITORING
+===================================================== -->
+
+<section class="page" id="monitoring">
+
+    <div class="pageTitle">
+
+        <h2>📹 Live CCTV Monitoring</h2>
+
+        <p>
+            Monitor different areas of the petrol pump
+        </p>
+
+    </div>
+
+
+    <div class="grid">
+
+        <div class="card">
+
+            <h3>CAM 01</h3>
+            <p>Fuel Dispensing Area</p>
+
+            <div
+                class="cameraBox"
+                style="margin-top:12px"
+            >
+
+                <div class="cameraScreen">
+                    <div class="cameraCenter">
+                        <div>⛽</div>
+                        <strong>FUEL DISPENSING AREA</strong>
+                        <p>CCTV Feed Active</p>
+                    </div>
+                </div>
+
+                <div class="cameraOverlay">
+                    <span>CAM-01</span>
+                    <span class="rec">● LIVE</span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>CAM 02</h3>
+            <p>Entry / Exit Area</p>
+
+            <div
+                class="cameraBox"
+                style="margin-top:12px"
+            >
+
+                <div class="cameraScreen">
+                    <div class="cameraCenter">
+                        <div>🚗</div>
+                        <strong>VEHICLE ENTRY</strong>
+                        <p>CCTV Feed Active</p>
+                    </div>
+                </div>
+
+                <div class="cameraOverlay">
+                    <span>CAM-02</span>
+                    <span class="rec">● LIVE</span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>CAM 03</h3>
+            <p>Storage / Tank Area</p>
+
+            <div
+                class="cameraBox"
+                style="margin-top:12px"
+            >
+
+                <div class="cameraScreen">
+                    <div class="cameraCenter">
+                        <div>🛢️</div>
+                        <strong>STORAGE AREA</strong>
+                        <p>CCTV Feed Active</p>
+                    </div>
+                </div>
+
+                <div class="cameraOverlay">
+                    <span>CAM-03</span>
+                    <span class="rec">● LIVE</span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>CAM 04</h3>
+            <p>Customer / Pump Area</p>
+
+            <div
+                class="cameraBox"
+                style="margin-top:12px"
+            >
+
+                <div class="cameraScreen">
+                    <div class="cameraCenter">
+                        <div>👥</div>
+                        <strong>PUMP AREA</strong>
+                        <p>CCTV Feed Active</p>
+                    </div>
+                </div>
+
+                <div class="cameraOverlay">
+                    <span>CAM-04</span>
+                    <span class="rec">● LIVE</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+SAFETY DETECTION
+===================================================== -->
+
+<section class="page" id="detection">
+
+    <div class="pageTitle">
+
+        <h2>🛡️ Safety Detection</h2>
+
+        <p>
+            Monitor important petrol pump safety risks
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="detectionGrid">
+
+            <div
+                class="detect safe"
+                id="fireCard"
+            >
+                <div class="detectIcon">🔥</div>
+                <h4>Fire / Flame</h4>
+                <p id="firePageStatus">
+                    Safe
+                </p>
+            </div>
+
+
+            <div
+                class="detect safe"
+                id="smokeCard"
+            >
+                <div class="detectIcon">☁️</div>
+                <h4>Smoke</h4>
+                <p id="smokePageStatus">
+                    Safe
+                </p>
+            </div>
+
+
+            <div
+                class="detect safe"
+                id="spillCard"
+            >
+                <div class="detectIcon">💧</div>
+                <h4>Fuel Leakage</h4>
+                <p id="spillPageStatus">
+                    Safe
+                </p>
+            </div>
+
+
+            <div
+                class="detect safe"
+                id="personCard"
+            >
+                <div class="detectIcon">🚬</div>
+                <h4>Smoking</h4>
+                <p id="personPageStatus">
+                    Safe
+                </p>
+            </div>
+
+        </div>
+
+        <br>
+
+        <button
+            class="btn"
+            onclick="runSafetyScan()"
+        >
+            🔍 Run Safety Scan
+        </button>
+
+        <button
+            class="btn red"
+            onclick="simulateFire()"
+        >
+            🔥 Test Fire Alert
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+ALERTS
+===================================================== -->
+
+<section class="page" id="alerts">
+
+    <div class="pageTitle">
+
+        <h2>🔔 Safety Alerts</h2>
+
+        <p>
+            Recent alerts detected by the monitoring system
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="alertItem">
+
+            <div class="alertCircle">🔥</div>
+
+            <div class="alertText">
+                <strong>Fire / Flame Risk</strong>
+                <small>CAM-01 • Pump Area • 10:35 AM</small>
+            </div>
+
+            <span class="badge high">
+                HIGH
+            </span>
+
+            <button
+                class="btn green"
+                onclick="resolveAlert(this)"
+            >
+                Resolve
+            </button>
+
+        </div>
+
+
+        <div class="alertItem">
+
+            <div class="alertCircle">🚬</div>
+
+            <div class="alertText">
+                <strong>Smoking Detected</strong>
+                <small>CAM-02 • Pump 02 • 10:30 AM</small>
+            </div>
+
+            <span class="badge high">
+                HIGH
+            </span>
+
+            <button
+                class="btn green"
+                onclick="resolveAlert(this)"
+            >
+                Resolve
+            </button>
+
+        </div>
+
+
+        <div class="alertItem">
+
+            <div class="alertCircle">📱</div>
+
+            <div class="alertText">
+                <strong>Phone Usage</strong>
+                <small>CAM-01 • Pump Area • 10:20 AM</small>
+            </div>
+
+            <span class="badge medium">
+                MEDIUM
+            </span>
+
+            <button
+                class="btn green"
+                onclick="resolveAlert(this)"
+            >
+                Resolve
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+INCIDENT RECORDS
+===================================================== -->
+
+<section class="page" id="incidents">
+
+    <div class="pageTitle">
+
+        <h2>📋 Incident Records</h2>
+
+        <p>
+            Stored safety incidents for demonstration
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="tableWrap">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Time</th>
+                        <th>Incident</th>
+                        <th>Location</th>
+                        <th>Risk</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="incidentTable">
+
+                    <tr>
+                        <td>INC-001</td>
+                        <td>10:35 AM</td>
+                        <td>Fire / Flame</td>
+                        <td>Pump Area</td>
+                        <td>
+                            <span class="badge high">
+                                HIGH
+                            </span>
+                        </td>
+                        <td>Resolved</td>
+                    </tr>
+
+                    <tr>
+                        <td>INC-002</td>
+                        <td>10:30 AM</td>
+                        <td>Smoking</td>
+                        <td>Pump 02</td>
+                        <td>
+                            <span class="badge high">
+                                HIGH
+                            </span>
+                        </td>
+                        <td>Resolved</td>
+                    </tr>
+
+                    <tr>
+                        <td>INC-003</td>
+                        <td>10:20 AM</td>
+                        <td>Phone Usage</td>
+                        <td>Pump Area</td>
+                        <td>
+                            <span class="badge medium">
+                                MEDIUM
+                            </span>
+                        </td>
+                        <td>Open</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+WORKFLOW
+===================================================== -->
+
+<section class="page" id="workflow">
+
+    <div class="pageTitle">
+
+        <h2>⚙️ System Workflow</h2>
+
+        <p>
+            How the proposed smart safety system works
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="flow">
+
+            <div class="flowBox">
+                <div class="big">📹</div>
+                <strong>CCTV</strong>
+                <p>Video Input</p>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="flowBox">
+                <div class="big">🧠</div>
+                <strong>AI Analysis</strong>
+                <p>Risk Detection</p>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="flowBox">
+                <div class="big">🚨</div>
+                <strong>Alert</strong>
+                <p>Immediate Warning</p>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="flowBox">
+                <div class="big">👨‍💼</div>
+                <strong>Employee / Owner</strong>
+                <p>Action</p>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="flowBox">
+                <div class="big">📋</div>
+                <strong>Record</strong>
+                <p>Incident Storage</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <br>
+
+    <div class="card">
+
+        <h3>Safety Monitoring Process</h3>
+
+        <br>
+
+        <p>
+            Existing CCTV cameras provide video input.
+            The proposed monitoring system analyzes safety-related
+            conditions and generates an alert when a risk is detected.
+            The employee or owner can then take appropriate action
+            and the incident can be recorded.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+TESTING
+===================================================== -->
+
+<section class="page" id="testing">
+
+    <div class="pageTitle">
+
+        <h2>🧪 Testing / Demo</h2>
+
+        <p>
+            Click the buttons to demonstrate system responses
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="testGrid">
+
+            <button
+                class="testBtn"
+                onclick="simulateFire()"
+            >
+                🔥
+                <strong>Fire / Flame</strong>
+                <small>Generate fire alert</small>
+            </button>
+
+
+            <button
+                class="testBtn"
+                onclick="simulateSmoke()"
+            >
+                ☁️
+                <strong>Smoke</strong>
+                <small>Generate smoke alert</small>
+            </button>
+
+
+            <button
+                class="testBtn"
+                onclick="simulateSpill()"
+            >
+                💧
+                <strong>Fuel Leakage</strong>
+                <small>Generate leakage alert</small>
+            </button>
+
+
+            <button
+                class="testBtn"
+                onclick="simulateSmoking()"
+            >
+                🚬
+                <strong>Smoking</strong>
+                <small>Generate smoking alert</small>
+            </button>
+
+
+            <button
+                class="testBtn"
+                onclick="runSafetyScan()"
+            >
+                🔍
+                <strong>Safety Scan</strong>
+                <small>Run complete demo scan</small>
+            </button>
+
+
+            <button
+                class="testBtn"
+                onclick="resetSafety()"
+            >
+                ♻️
+                <strong>Reset System</strong>
+                <small>Return to safe status</small>
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+ABOUT
+===================================================== -->
+
+<section class="page" id="about">
+
+    <div class="pageTitle">
+
+        <h2>ℹ️ About Project</h2>
+
+        <p>
+            AI Based Smart Petrol Pump Management & Safety System
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>Project Objective</h3>
+
+        <br>
+
+        <p>
+            The proposed system aims to improve safety monitoring
+            at petrol pumps by using CCTV-based monitoring,
+            risk detection, alerts and incident records.
+        </p>
+
+        <br>
+
+        <h3>Safety Risks</h3>
+
+        <br>
+
+        <ul style="padding-left:20px;line-height:2">
+            <li>🔥 Fire / Flame</li>
+            <li>☁️ Smoke</li>
+            <li>💧 Fuel Leakage / Spillage</li>
+            <li>🚬 Smoking</li>
+            <li>📱 Unsafe Phone Usage</li>
+        </ul>
+
+        <br>
+
+        <h3>System Components</h3>
+
+        <br>
+
+        <ul style="padding-left:20px;line-height:2">
+            <li>Existing CCTV cameras</li>
+            <li>Monitoring dashboard</li>
+            <li>Safety detection module</li>
+            <li>Alert system</li>
+            <li>Incident records</li>
+        </ul>
+
+    </div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
+<!-- =====================================================
+EMERGENCY MODAL
+===================================================== -->
+
+<div
+    class="modal"
+    id="emergencyModal"
+>
+
+    <div class="modalBox">
+
+        <div class="modalIcon">
+            🚨
+        </div>
+
+        <h2>EMERGENCY ALERT</h2>
+
+        <p>
+            Emergency safety alert has been generated.
+            Employee and owner should immediately check
+            the affected pump area.
+        </p>
+
+        <button
+            class="btn red"
+            onclick="closeEmergency()"
+        >
+            Acknowledge
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+LOGIN
+===================================================== */
+
+function login(){
+
+    const username =
+        document.getElementById("username").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    const error =
+        document.getElementById("loginError");
+
+    if(username === "admin" && password === "1234"){
+
+        document.getElementById("loginScreen").style.display="none";
+
+        document.getElementById("app").style.display="block";
+
+        document.getElementById("loggedUser").textContent =
+            username;
+
+        error.style.display="none";
+
+        startClock();
+
+    }else{
+
+        error.style.display="block";
+
+    }
+
+}
+
+
+/* ENTER KEY LOGIN */
+
+document.addEventListener("keydown",function(e){
+
+    if(e.key==="Enter"){
+
+        const loginScreen =
+            document.getElementById("loginScreen");
+
+        if(loginScreen.style.display !== "none"){
+
+            login();
+
+        }
+
+    }
+
+});
+
+
+/* =====================================================
+LOGOUT
+===================================================== */
+
+function logout(){
+
+    stopCamera();
+
+    document.getElementById("app").style.display="none";
+
+    document.getElementById("loginScreen").style.display="flex";
+
+    document.getElementById("username").value="";
+
+    document.getElementById("password").value="";
+
+    document.getElementById("sidebar").classList.remove("open");
+
+}
+
+
+/* =====================================================
+3 DASH MENU
+===================================================== */
+
+function toggleMenu(){
+
+    const sidebar =
+        document.getElementById("sidebar");
+
+    const main =
+        document.getElementById("mainContent");
+
+    if(window.innerWidth <= 700){
+
+        sidebar.classList.toggle("open");
+
+    }else{
+
+        sidebar.classList.toggle("closed");
+
+        main.classList.toggle("full");
+
+    }
+
+}
+
+
+/* =====================================================
+PAGE NAVIGATION
+===================================================== */
+
+function showPage(pageId,button){
+
+    const pages =
+        document.querySelectorAll(".page");
+
+    pages.forEach(function(page){
+
+        page.classList.remove("active");
+
+    });
+
+
+    const selected =
+        document.getElementById(pageId);
+
+    if(selected){
+
+        selected.classList.add("active");
+
+    }
+
+
+    const buttons =
+        document.querySelectorAll(".sidebar button");
+
+    buttons.forEach(function(btn){
+
+        btn.classList.remove("active");
+
+    });
+
+
+    if(button){
+
+        button.classList.add("active");
+
+    }
+
+
+    /* Close mobile menu after selection */
+
+    if(window.innerWidth <= 700){
+
+        document
+            .getElementById("sidebar")
+            .classList.remove("open");
+
+    }
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =====================================================
+CLOCK
+===================================================== */
+
+function startClock(){
+
+    updateClock();
+
+    setInterval(updateClock,1000);
+
+}
+
+
+function updateClock(){
+
+    const clock =
+        document.getElementById("cameraTime");
+
+    if(clock){
+
+        clock.textContent =
+            new Date().toLocaleTimeString();
+
+    }
+
+}
+
+
+/* =====================================================
+PHONE CAMERA
+===================================================== */
+
+let cameraStream = null;
+
+
+async function startCamera(){
+
+    const video =
+        document.getElementById("cameraVideo");
+
+    const placeholder =
+        document.getElementById("cameraPlaceholder");
+
+
+    try{
+
+        cameraStream =
+            await navigator.mediaDevices.getUserMedia({
+                video:true,
+                audio:false
+            });
+
+        video.srcObject =
+            cameraStream;
+
+        video.style.display="block";
+
+        placeholder.style.display="none";
+
+    }catch(error){
+
+        alert(
+            "Camera could not be opened.\n\n" +
+            "Please allow camera permission and use HTTPS " +
+            "or localhost."
+        );
+
+    }
+
+}
+
+
+function stopCamera(){
+
+    const video =
+        document.getElementById("cameraVideo");
+
+    const placeholder =
+        document.getElementById("cameraPlaceholder");
+
+
+    if(cameraStream){
+
+        cameraStream.getTracks().forEach(function(track){
+
+            track.stop();
+
+        });
+
+        cameraStream=null;
+
+    }
+
+
+    if(video){
+
+        video.srcObject=null;
+        video.style.display="none";
+
+    }
+
+
+    if(placeholder){
+
+        placeholder.style.display="block";
+
+    }
+
+}
+
+
+/* =====================================================
+SAFETY SCAN
+===================================================== */
+
+function runSafetyScan(){
+
+    const statuses = [
+
+        ["fireStatus","No Risk Detected"],
+        ["smokeStatus","No Risk Detected"],
+        ["spillStatus","No Risk Detected"],
+        ["smokePersonStatus","No Risk Detected"]
+
+    ];
+
+
+    statuses.forEach(function(item){
+
+        const el =
+            document.getElementById(item[0]);
+
+        if(el){
+
+            el.textContent=item[1];
+
+        }
+
+    });
+
+
+    setPageSafe(
+        "fireCard",
+        "firePageStatus",
+        "Safe"
+    );
+
+    setPageSafe(
+        "smokeCard",
+        "smokePageStatus",
+        "Safe"
+    );
+
+    setPageSafe(
+        "spillCard",
+        "spillPageStatus",
+        "Safe"
+    );
+
+    setPageSafe(
+        "personCard",
+        "personPageStatus",
+        "Safe"
+    );
+
+
+    document.getElementById("safetyStatus")
+        .textContent="SAFE";
+
+    document.getElementById("safetyStatus")
+        .style.color="#159447";
+
+
+    alert(
+        "Safety scan completed.\n\n" +
+        "✓ Fire: Safe\n" +
+        "✓ Smoke: Safe\n" +
+        "✓ Fuel Leakage: Safe\n" +
+        "✓ Smoking: Safe"
+    );
+
+}
+
+
+/* =====================================================
+SIMULATE FIRE
+===================================================== */
+
+function simulateFire(){
+
+    setRisk(
+        "fireCard",
+        "firePageStatus",
+        "fireStatus",
+        "🔥 FIRE RISK DETECTED"
+    );
+
+    emergencyAlert();
+
+}
+
+
+/* =====================================================
+SIMULATE SMOKE
+===================================================== */
+
+function simulateSmoke(){
+
+    setRisk(
+        "smokeCard",
+        "smokePageStatus",
+        "smokeStatus",
+        "☁️ SMOKE DETECTED"
+    );
+
+}
+
+
+/* =====================================================
+SIMULATE SPILL
+===================================================== */
+
+function simulateSpill(){
+
+    setRisk(
+        "spillCard",
+        "spillPageStatus",
+        "spillStatus",
+        "💧 FUEL LEAKAGE DETECTED"
+    );
+
+}
+
+
+/* =====================================================
+SIMULATE SMOKING
+===================================================== */
+
+function simulateSmoking(){
+
+    setRisk(
+        "personCard",
+        "personPageStatus",
+        "smokePersonStatus",
+        "🚬 SMOKING DETECTED"
+    );
+
+}
+
+
+/* =====================================================
+RISK FUNCTION
+===================================================== */
+
+function setRisk(
+    cardId,
+    pageStatusId,
+    dashboardStatusId,
+    message
+){
+
+    const card =
+        document.getElementById(cardId);
+
+    const pageStatus =
+        document.getElementById(pageStatusId);
+
+    const dashboardStatus =
+        document.getElementById(dashboardStatusId);
+
+
+    if(card){
+
+        card.classList.remove("safe");
+
+        card.classList.add("risk");
+
+    }
+
+
+    if(pageStatus){
+
+        pageStatus.textContent=message;
+
+        pageStatus.style.color="#d00000";
+
+    }
+
+
+    if(dashboardStatus){
+
+        dashboardStatus.textContent=message;
+
+        dashboardStatus.style.color="#d00000";
+
+    }
+
+
+    const safety =
+        document.getElementById("safetyStatus");
+
+    if(safety){
+
+        safety.textContent="RISK";
+
+        safety.style.color="#d00000";
+
+    }
+
+}
+
+
+/* =====================================================
+RESET SAFETY
+===================================================== */
+
+function resetSafety(){
+
+    const cards=[
+        "fireCard",
+        "smokeCard",
+        "spillCard",
+        "personCard"
+    ];
+
+    cards.forEach(function(id){
+
+        const card =
+            document.getElementById(id);
+
+        if(card){
+
+            card.classList.remove("risk");
+
+            card.classList.add("safe");
+
+        }
+
+    });
+
+
+    document.getElementById("firePageStatus")
+        .textContent="Safe";
+
+    document.getElementById("smokePageStatus")
+        .textContent="Safe";
+
+    document.getElementById("spillPageStatus")
+        .textContent="Safe";
+
+    document.getElementById("personPageStatus")
+        .textContent="Safe";
+
+
+    document.getElementById("fireStatus")
+        .textContent="No Risk Detected";
+
+    document.getElementById("smokeStatus")
+        .textContent="No Risk Detected";
+
+    document.getElementById("spillStatus")
+        .textContent="No Risk Detected";
+
+    document.getElementById("smokePersonStatus")
+        .textContent="No Risk Detected";
+
+
+    const safety =
+        document.getElementById("safetyStatus");
+
+    safety.textContent="SAFE";
+
+    safety.style.color="#159447";
+
+
+    alert("System reset. All safety indicators are normal.");
+
+}
+
+
+/* =====================================================
+SET PAGE SAFE
+===================================================== */
+
+function setPageSafe(
+    cardId,
+    statusId,
+    text
+){
+
+    const card =
+        document.getElementById(cardId);
+
+    const status =
+        document.getElementById(statusId);
+
+
+    if(card){
+
+        card.classList.remove("risk");
+
+        card.classList.add("safe");
+
+    }
+
+
+    if(status){
+
+        status.textContent=text;
+
+        status.style.color="#14833b";
+
+    }
+
+}
+
+
+/* =====================================================
+EMERGENCY ALERT
+===================================================== */
+
+function emergencyAlert(){
+
+    document
+        .getElementById("emergencyModal")
+        .classList.add("show");
+
+}
+
+
+function closeEmergency(){
+
+    document
+        .getElementById("emergencyModal")
+        .classList.remove("show");
+
+}
+
+
+/* =====================================================
+RESOLVE ALERT
+===================================================== */
+
+function resolveAlert(button){
+
+    const item =
+        button.closest(".alertItem");
+
+    if(item){
+
+        item.style.opacity=".45";
+
+        button.textContent="Resolved";
+
+        button.disabled=true;
+
+    }
+
+}
+
+
+/* =====================================================
+CLOSE MODAL BY CLICKING OUTSIDE
+===================================================== */
+
+document
+.getElementById("emergencyModal")
+.addEventListener("click",function(e){
+
+    if(e.target === this){
+
+        closeEmergency();
+
+    }
+
+});
+
+
+/* =====================================================
+INITIAL CLOCK
+===================================================== */
+
+updateClock();
+
+</script>
+
+</body>
+</html>
